@@ -31,9 +31,17 @@ class SeriesController extends Controller
         //     'nome' => $nome
         // ]);
 
-        $serie = Serie::create($request->all());
+        $serie = Serie::create(['nome' => $request->nome]);
+        $qtdTemporadas = $request->qtd_temporadas;
+        for ($i = 1; $i <= $qtdTemporadas; $i++) {
+            $temporada = $serie->temporadas()->create(['numero' => $i]);
 
-        $request->session()->flash('mensagem', "Série {$serie->id} criada com sucesso: {$serie->nome}");
+            for ($j = 1; $j <= $request->episodios; $j++) {
+                $temporada->episodios()->create(['numero' => $j]);
+            }
+        }
+
+        $request->session()->flash('mensagem', "Série {$serie->id} e suas temporadas e episodios criados com sucesso: {$serie->nome}");
 
         return redirect()->route('listar_series');
     }
